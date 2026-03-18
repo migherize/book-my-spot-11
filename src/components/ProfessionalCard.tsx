@@ -2,14 +2,14 @@ import { Link } from "react-router-dom";
 import { Star, MapPin, Clock, Video } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import type { Professional } from "@/data/mockData";
+import type { Professional } from "@/lib/api";
 
 interface Props {
   professional: Professional;
   index?: number;
 }
 
-const categoryStyles = {
+const categoryStyles: Record<string, string> = {
   health: "bg-health-light text-health",
   beauty: "bg-beauty-light text-beauty",
   wellness: "bg-wellness-light text-wellness",
@@ -30,7 +30,7 @@ export default function ProfessionalCard({ professional, index = 0 }: Props) {
       >
         <div className="flex gap-4 p-5">
           <img
-            src={p.photo}
+            src={p.photo ?? "/placeholder.svg"}
             alt={p.name}
             className="h-20 w-20 shrink-0 rounded-xl object-cover"
           />
@@ -40,7 +40,7 @@ export default function ProfessionalCard({ professional, index = 0 }: Props) {
                 <h3 className="font-display font-semibold text-foreground group-hover:text-primary transition-colors truncate">{p.name}</h3>
                 <p className="text-sm text-muted-foreground">{p.specialty}</p>
               </div>
-              <Badge variant="secondary" className={categoryStyles[p.categoryType]}>
+              <Badge variant="secondary" className={categoryStyles[p.category_type] ?? ""}>
                 {p.specialty}
               </Badge>
             </div>
@@ -49,11 +49,13 @@ export default function ProfessionalCard({ professional, index = 0 }: Props) {
               <span className="flex items-center gap-1">
                 <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
                 <span className="font-medium text-foreground">{p.rating}</span>
-                <span>({p.reviewCount})</span>
+                <span>({p.review_count})</span>
               </span>
-              <span className="flex items-center gap-1">
-                <MapPin className="h-3.5 w-3.5" /> {p.location}
-              </span>
+              {p.location && (
+                <span className="flex items-center gap-1">
+                  <MapPin className="h-3.5 w-3.5" /> {p.location}
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -70,7 +72,7 @@ export default function ProfessionalCard({ professional, index = 0 }: Props) {
             )}
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">{p.nextAvailable}</span>
+            <span className="text-sm text-muted-foreground">{p.next_available ?? ""}</span>
             <span className="font-display font-bold text-foreground">${p.price}</span>
           </div>
         </div>
