@@ -96,6 +96,7 @@ export default function BookingConfirm() {
   };
 
   return (
+    <PageTransition>
     <div className="min-h-screen bg-background">
       <Navbar />
 
