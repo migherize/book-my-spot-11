@@ -43,7 +43,7 @@ export default function AuthPage() {
       if (error) {
         toast({ title: "Error", description: error.message, variant: "destructive" });
       } else {
-        navigate("/");
+        navigate(redirect);
       }
     }
     setLoading(false);
