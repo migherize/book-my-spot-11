@@ -205,5 +205,6 @@ export default function BookingConfirm() {
 
       <Footer />
     </div>
+    </PageTransition>
   );
 }
