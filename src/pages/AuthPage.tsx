@@ -35,7 +35,8 @@ export default function AuthPage() {
       if (error) {
         toast({ title: "Error", description: error.message, variant: "destructive" });
       } else {
-        toast({ title: "¡Cuenta creada!", description: "Revisa tu email para confirmar tu cuenta." });
+        toast({ title: "¡Cuenta creada!", description: "Ya puedes iniciar sesión." });
+        navigate(redirect);
       }
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
