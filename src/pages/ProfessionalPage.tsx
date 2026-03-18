@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import PageTransition from "@/components/PageTransition";
 import { getProfessionalById, generateTimeSlots, type TimeSlot } from "@/data/mockData";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
