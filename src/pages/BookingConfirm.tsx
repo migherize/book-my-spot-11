@@ -3,6 +3,7 @@ import { useState } from "react";
 import { getProfessionalById } from "@/data/mockData";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import PageTransition from "@/components/PageTransition";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -95,6 +96,7 @@ export default function BookingConfirm() {
   };
 
   return (
+    <PageTransition>
     <div className="min-h-screen bg-background">
       <Navbar />
 
@@ -203,5 +205,6 @@ export default function BookingConfirm() {
 
       <Footer />
     </div>
+    </PageTransition>
   );
 }

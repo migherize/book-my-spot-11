@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import PageTransition from "@/components/PageTransition";
 import { getProfessionalById, generateTimeSlots, type TimeSlot } from "@/data/mockData";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -51,8 +52,8 @@ export default function ProfessionalPage() {
   };
 
   return (
+    <PageTransition>
     <div className="min-h-screen bg-background">
-      <Navbar />
 
       <div className="container mx-auto px-4 py-6">
         <button onClick={() => navigate(-1)} className="mb-6 flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -160,5 +161,6 @@ export default function ProfessionalPage() {
 
       <Footer />
     </div>
+    </PageTransition>
   );
 }
