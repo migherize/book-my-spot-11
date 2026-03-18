@@ -161,5 +161,6 @@ export default function ProfessionalPage() {
 
       <Footer />
     </div>
+    </PageTransition>
   );
 }
