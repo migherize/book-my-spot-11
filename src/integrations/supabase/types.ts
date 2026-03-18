@@ -14,16 +14,261 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      bookings: {
+        Row: {
+          booking_date: string
+          booking_time: string
+          client_email: string
+          client_name: string
+          client_phone: string | null
+          client_user_id: string | null
+          created_at: string
+          currency: string
+          duration: number
+          id: string
+          price: number
+          professional_id: string
+          status: Database["public"]["Enums"]["booking_status"]
+          updated_at: string
+        }
+        Insert: {
+          booking_date: string
+          booking_time: string
+          client_email: string
+          client_name: string
+          client_phone?: string | null
+          client_user_id?: string | null
+          created_at?: string
+          currency?: string
+          duration: number
+          id?: string
+          price: number
+          professional_id: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          updated_at?: string
+        }
+        Update: {
+          booking_date?: string
+          booking_time?: string
+          client_email?: string
+          client_name?: string
+          client_phone?: string | null
+          client_user_id?: string | null
+          created_at?: string
+          currency?: string
+          duration?: number
+          id?: string
+          price?: number
+          professional_id?: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      categories: {
+        Row: {
+          description: string
+          icon: string
+          id: string
+          name: string
+          type: Database["public"]["Enums"]["category_type"]
+        }
+        Insert: {
+          description: string
+          icon: string
+          id: string
+          name: string
+          type: Database["public"]["Enums"]["category_type"]
+        }
+        Update: {
+          description?: string
+          icon?: string
+          id?: string
+          name?: string
+          type?: Database["public"]["Enums"]["category_type"]
+        }
+        Relationships: []
+      }
+      professionals: {
+        Row: {
+          category_type: Database["public"]["Enums"]["category_type"]
+          created_at: string
+          currency: string
+          description: string | null
+          duration: number
+          id: string
+          languages: string[] | null
+          location: string | null
+          modality: Database["public"]["Enums"]["modality_type"][] | null
+          name: string
+          next_available: string | null
+          photo: string | null
+          price: number
+          rating: number
+          review_count: number
+          specialty: string
+          subcategory_id: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          category_type: Database["public"]["Enums"]["category_type"]
+          created_at?: string
+          currency?: string
+          description?: string | null
+          duration?: number
+          id?: string
+          languages?: string[] | null
+          location?: string | null
+          modality?: Database["public"]["Enums"]["modality_type"][] | null
+          name: string
+          next_available?: string | null
+          photo?: string | null
+          price: number
+          rating?: number
+          review_count?: number
+          specialty: string
+          subcategory_id: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          category_type?: Database["public"]["Enums"]["category_type"]
+          created_at?: string
+          currency?: string
+          description?: string | null
+          duration?: number
+          id?: string
+          languages?: string[] | null
+          location?: string | null
+          modality?: Database["public"]["Enums"]["modality_type"][] | null
+          name?: string
+          next_available?: string | null
+          photo?: string | null
+          price?: number
+          rating?: number
+          review_count?: number
+          specialty?: string
+          subcategory_id?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professionals_subcategory_id_fkey"
+            columns: ["subcategory_id"]
+            isOneToOne: false
+            referencedRelation: "subcategories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      subcategories: {
+        Row: {
+          category_id: string
+          category_type: Database["public"]["Enums"]["category_type"]
+          id: string
+          name: string
+          professional_count: number
+        }
+        Insert: {
+          category_id: string
+          category_type: Database["public"]["Enums"]["category_type"]
+          id: string
+          name: string
+          professional_count?: number
+        }
+        Update: {
+          category_id?: string
+          category_type?: Database["public"]["Enums"]["category_type"]
+          id?: string
+          name?: string
+          professional_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subcategories_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "client" | "professional" | "admin"
+      booking_status: "pending" | "confirmed" | "cancelled" | "completed"
+      category_type: "health" | "beauty" | "wellness"
+      modality_type: "presencial" | "online"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +395,11 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["client", "professional", "admin"],
+      booking_status: ["pending", "confirmed", "cancelled", "completed"],
+      category_type: ["health", "beauty", "wellness"],
+      modality_type: ["presencial", "online"],
+    },
   },
 } as const
