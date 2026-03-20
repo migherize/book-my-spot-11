@@ -147,6 +147,29 @@ export async function createBooking(params: {
   return data;
 }
 
+export async function sendBookingConfirmation(params: {
+  client_name: string;
+  client_email: string;
+  professional_name: string;
+  professional_specialty: string;
+  booking_date: string;
+  booking_time: string;
+  duration: number;
+  price: number;
+  currency: string;
+  location?: string;
+}) {
+  try {
+    const { data, error } = await supabase.functions.invoke("send-booking-confirmation", {
+      body: params,
+    });
+    if (error) console.error("Email notification error:", error);
+    return data;
+  } catch (err) {
+    console.error("Failed to send booking confirmation:", err);
+  }
+}
+
 export async function fetchUserBookings(userId: string) {
   const { data, error } = await supabase
     .from("bookings")
