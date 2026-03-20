@@ -1,6 +1,6 @@
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
-import { fetchProfessionalById, createBooking, type Professional } from "@/lib/api";
+import { fetchProfessionalById, createBooking, sendBookingConfirmation, type Professional } from "@/lib/api";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PageTransition from "@/components/PageTransition";
@@ -86,6 +86,19 @@ export default function BookingConfirm() {
         duration: professional.duration,
         price: professional.price,
         currency: professional.currency,
+      });
+      // Send email notification (fire-and-forget)
+      sendBookingConfirmation({
+        client_name: name,
+        client_email: email,
+        professional_name: professional.name,
+        professional_specialty: professional.specialty,
+        booking_date: date.toISOString().split("T")[0],
+        booking_time: time,
+        duration: professional.duration,
+        price: professional.price,
+        currency: professional.currency,
+        location: professional.location ?? undefined,
       });
       setStep("confirmed");
     } catch (err: any) {
