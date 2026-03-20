@@ -1,6 +1,6 @@
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
-import { fetchProfessionalById, createBooking, type Professional } from "@/lib/api";
+import { fetchProfessionalById, createBooking, sendBookingConfirmation, type Professional } from "@/lib/api";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PageTransition from "@/components/PageTransition";
