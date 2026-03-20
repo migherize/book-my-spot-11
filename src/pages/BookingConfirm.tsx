@@ -87,6 +87,19 @@ export default function BookingConfirm() {
         price: professional.price,
         currency: professional.currency,
       });
+      // Send email notification (fire-and-forget)
+      sendBookingConfirmation({
+        client_name: name,
+        client_email: email,
+        professional_name: professional.name,
+        professional_specialty: professional.specialty,
+        booking_date: date.toISOString().split("T")[0],
+        booking_time: time,
+        duration: professional.duration,
+        price: professional.price,
+        currency: professional.currency,
+        location: professional.location ?? undefined,
+      });
       setStep("confirmed");
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
