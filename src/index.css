@@ -91,6 +91,7 @@
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    -webkit-tap-highlight-color: transparent;
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Plus Jakarta Sans', sans-serif;
@@ -100,5 +101,21 @@
 @layer utilities {
   .font-display {
     font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .touch-ripple {
+    @apply relative overflow-hidden;
+  }
+  .touch-ripple::after {
+    content: '';
+    @apply absolute inset-0 bg-foreground/10 opacity-0 transition-opacity duration-200;
+  }
+  .touch-ripple:active::after {
+    @apply opacity-100;
   }
 }
