@@ -26,7 +26,7 @@ export default function ProfessionalCard({ professional, index = 0 }: Props) {
     >
       <Link
         to={`/professional/${p.id}`}
-        className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-all hover:shadow-lg hover:-translate-y-0.5"
+        className="touch-ripple group flex flex-col overflow-hidden rounded-2xl md:rounded-xl border border-border bg-card transition-all hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.99]"
       >
         <div className="flex gap-4 p-5">
           <img
