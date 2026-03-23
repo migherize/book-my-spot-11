@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">app_citas</string>
+    <string name="title_activity_main">app_citas</string>
+    <string name="package_name">com.tuempresa.bookmyspot</string>
+    <string name="custom_url_scheme">com.tuempresa.bookmyspot</string>
+</resources>
