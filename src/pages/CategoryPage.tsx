@@ -1,10 +1,9 @@
 import { useParams, Link } from "react-router-dom";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import MobileLayout from "@/components/MobileLayout";
 import ProfessionalCard from "@/components/ProfessionalCard";
 import PageTransition from "@/components/PageTransition";
-import { fetchCategoryWithSubcategories, fetchProfessionalsByCategory, type CategoryType, type Professional } from "@/lib/api";
-import { useState, useEffect } from "react";
+import { fetchCategoryWithSubcategories, fetchProfessionalsByCategory, type CategoryType } from "@/lib/api";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion } from "framer-motion";
@@ -40,14 +39,12 @@ export default function CategoryPage() {
 
   if (catData && !category) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
+      <MobileLayout title="Categoría">
         <div className="container mx-auto px-4 py-20 text-center">
           <h1 className="font-display text-2xl font-bold">Categoría no encontrada</h1>
           <Link to="/" className="mt-4 text-primary hover:underline inline-block">Volver al inicio</Link>
         </div>
-        <Footer />
-      </div>
+      </MobileLayout>
     );
   }
 
@@ -57,31 +54,29 @@ export default function CategoryPage() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-background">
-        <Navbar />
-
+      <MobileLayout title={category?.name ?? "Categoría"}>
         {category && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }} className={`border-b py-8 ${categoryStyles[category.type] ?? ""}`}>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }} className={`border-b py-6 md:py-8 ${categoryStyles[category.type] ?? ""}`}>
             <div className="container mx-auto px-4">
-              <h1 className="font-display text-3xl font-bold">{category.name}</h1>
+              <h1 className="font-display text-2xl md:text-3xl font-bold hidden md:block">{category.name}</h1>
               <p className="mt-1 text-sm opacity-80">{category.description}</p>
             </div>
           </motion.div>
         )}
 
-        <div className="container mx-auto px-4 py-8">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.15 }} className="mb-6 flex flex-wrap items-center gap-3">
-            <Badge variant={selectedSub === "all" ? "default" : "outline"} className="cursor-pointer" onClick={() => setSelectedSub("all")}>
+        <div className="container mx-auto px-4 py-4 md:py-8">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.15 }} className="mb-4 md:mb-6 flex flex-wrap items-center gap-2 md:gap-3">
+            <Badge variant={selectedSub === "all" ? "default" : "outline"} className="cursor-pointer touch-ripple" onClick={() => setSelectedSub("all")}>
               Todos
             </Badge>
             {subcategories.map(sub => (
-              <Badge key={sub.id} variant={selectedSub === sub.id ? "default" : "outline"} className="cursor-pointer" onClick={() => setSelectedSub(sub.id)}>
+              <Badge key={sub.id} variant={selectedSub === sub.id ? "default" : "outline"} className="cursor-pointer touch-ripple" onClick={() => setSelectedSub(sub.id)}>
                 {sub.name} ({sub.professional_count})
               </Badge>
             ))}
-            <div className="ml-auto">
+            <div className="ml-auto w-full md:w-auto mt-2 md:mt-0">
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="w-full md:w-44"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="recommended">Recomendados</SelectItem>
                   <SelectItem value="price">Menor precio</SelectItem>
@@ -97,14 +92,12 @@ export default function CategoryPage() {
               <p className="mt-1 text-sm text-muted-foreground">Prueba quitando filtros o explorando otra categoría.</p>
             </motion.div>
           ) : (
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-3 md:gap-4 grid-cols-1 md:grid-cols-2">
               {sorted.map((p, i) => <ProfessionalCard key={p.id} professional={p} index={i} />)}
             </div>
           )}
         </div>
-
-        <Footer />
-      </div>
+      </MobileLayout>
     </PageTransition>
   );
 }

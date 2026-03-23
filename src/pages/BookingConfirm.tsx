@@ -1,14 +1,13 @@
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
-import { fetchProfessionalById, createBooking, sendBookingConfirmation, type Professional } from "@/lib/api";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { fetchProfessionalById, createBooking, sendBookingConfirmation } from "@/lib/api";
+import MobileLayout from "@/components/MobileLayout";
 import PageTransition from "@/components/PageTransition";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, CalendarDays, Clock, MapPin, CheckCircle2, Calendar as CalendarIcon, Download, Loader2 } from "lucide-react";
+import { CalendarDays, Clock, MapPin, CheckCircle2, Calendar as CalendarIcon, Download, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -42,7 +41,6 @@ export default function BookingConfirm() {
   const [phone, setPhone] = useState(profile?.phone ?? "");
   const [submitting, setSubmitting] = useState(false);
 
-  // Update defaults when profile loads
   useState(() => {
     if (profile?.full_name && !name) setName(profile.full_name);
     if (user?.email && !email) setEmail(user.email);
@@ -50,14 +48,12 @@ export default function BookingConfirm() {
 
   if (!professional) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
+      <MobileLayout title="Confirmar reserva">
         <div className="container mx-auto px-4 py-20 text-center">
           <h1 className="font-display text-2xl font-bold">Reserva no válida</h1>
           <Link to="/" className="mt-4 text-primary hover:underline inline-block">Volver al inicio</Link>
         </div>
-        <Footer />
-      </div>
+      </MobileLayout>
     );
   }
 
@@ -66,13 +62,11 @@ export default function BookingConfirm() {
 
   const handleConfirm = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!user) {
       toast({ title: "Inicia sesión", description: "Necesitas una cuenta para reservar una cita.", variant: "destructive" });
       navigate(`/auth?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`);
       return;
     }
-
     setSubmitting(true);
     try {
       await createBooking({
@@ -87,7 +81,6 @@ export default function BookingConfirm() {
         price: professional.price,
         currency: professional.currency,
       });
-      // Send email notification (fire-and-forget)
       sendBookingConfirmation({
         client_name: name,
         client_email: email,
@@ -145,28 +138,24 @@ export default function BookingConfirm() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <div className="container mx-auto max-w-2xl px-4 py-8">
+      <MobileLayout title="Confirmar reserva">
+        <div className="container mx-auto max-w-2xl px-4 py-4 md:py-8">
           {step === "form" ? (
             <>
-              <button onClick={() => navigate(-1)} className="mb-6 flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                <ArrowLeft className="h-4 w-4" /> Volver
-              </button>
-              <h1 className="font-display text-2xl font-bold mb-6">Confirmar reserva</h1>
+              <h1 className="font-display text-2xl font-bold mb-4 md:mb-6 hidden md:block">Confirmar reserva</h1>
 
-              <div className="rounded-xl border border-border bg-card p-5 mb-6 space-y-3">
-                <div className="flex items-center gap-4">
+              <div className="rounded-2xl border border-border bg-card p-4 md:p-5 mb-4 md:mb-6 space-y-3">
+                <div className="flex items-center gap-3 md:gap-4">
                   <img src={professional.photo ?? "/placeholder.svg"} alt={professional.name} className="h-14 w-14 rounded-xl object-cover shrink-0" />
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h2 className="font-display font-semibold">{professional.name}</h2>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h2 className="font-display font-semibold truncate">{professional.name}</h2>
                       <Badge className={categoryBadgeStyles[professional.category_type]}>{professional.specialty}</Badge>
                     </div>
-                    {professional.location && <p className="text-sm text-muted-foreground"><MapPin className="inline h-3.5 w-3.5 mr-1" />{professional.location}</p>}
+                    {professional.location && <p className="text-sm text-muted-foreground truncate"><MapPin className="inline h-3.5 w-3.5 mr-1" />{professional.location}</p>}
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-4 text-sm border-t border-border pt-3">
+                <div className="flex flex-wrap gap-3 md:gap-4 text-sm border-t border-border pt-3">
                   <span className="flex items-center gap-1.5 text-muted-foreground"><CalendarDays className="h-4 w-4" /><span className="capitalize">{formattedDate}</span></span>
                   <span className="flex items-center gap-1.5 text-muted-foreground"><Clock className="h-4 w-4" /> {time} ({professional.duration} min)</span>
                 </div>
@@ -177,7 +166,7 @@ export default function BookingConfirm() {
               </div>
 
               {!user && (
-                <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 mb-6 text-center">
+                <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4 mb-4 md:mb-6 text-center">
                   <p className="text-sm text-muted-foreground mb-2">Necesitas una cuenta para completar la reserva</p>
                   <Button size="sm" onClick={() => navigate(`/auth?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`)}>
                     Iniciar sesión / Registrarse
@@ -185,28 +174,28 @@ export default function BookingConfirm() {
                 </div>
               )}
 
-              <form onSubmit={handleConfirm} className="rounded-xl border border-border bg-card p-5 space-y-4">
+              <form onSubmit={handleConfirm} className="rounded-2xl border border-border bg-card p-4 md:p-5 space-y-4">
                 <h2 className="font-display font-semibold">Tus datos</h2>
                 <div className="space-y-2">
                   <Label htmlFor="name">Nombre completo *</Label>
-                  <Input id="name" required value={name} onChange={(e) => setName(e.target.value)} placeholder="Tu nombre" />
+                  <Input id="name" required value={name} onChange={(e) => setName(e.target.value)} placeholder="Tu nombre" className="h-12 md:h-10 text-base" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email *</Label>
-                  <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tu@email.com" />
+                  <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tu@email.com" className="h-12 md:h-10 text-base" inputMode="email" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Teléfono (opcional)</Label>
-                  <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+34 600 000 000" />
+                  <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+34 600 000 000" className="h-12 md:h-10 text-base" inputMode="tel" />
                 </div>
-                <Button type="submit" size="lg" className="w-full mt-2" disabled={submitting || !user}>
+                <Button type="submit" size="lg" className="w-full mt-2 h-12 active:scale-[0.98] transition-transform" disabled={submitting || !user}>
                   {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Confirmar reserva
                 </Button>
               </form>
             </>
           ) : (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center space-y-6 py-12">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center space-y-6 py-8 md:py-12">
               <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
                 <CheckCircle2 className="h-10 w-10 text-green-600" />
               </div>
@@ -215,7 +204,7 @@ export default function BookingConfirm() {
                 <p className="text-muted-foreground mt-1">Te hemos enviado los detalles a <span className="font-medium text-foreground">{email}</span></p>
               </div>
 
-              <div className="rounded-xl border border-border bg-card p-5 text-left space-y-3 max-w-md mx-auto">
+              <div className="rounded-2xl border border-border bg-card p-4 md:p-5 text-left space-y-3 max-w-md mx-auto">
                 <div className="flex items-center gap-3">
                   <img src={professional.photo ?? "/placeholder.svg"} alt={professional.name} className="h-12 w-12 rounded-xl object-cover" />
                   <div>
@@ -232,10 +221,10 @@ export default function BookingConfirm() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
-                <Button variant="outline" onClick={generateICS} className="flex-1">
+                <Button variant="outline" onClick={generateICS} className="flex-1 h-12 md:h-10 active:scale-[0.98] transition-transform">
                   <Download className="h-4 w-4 mr-1" /> Descargar .ics
                 </Button>
-                <Button variant="outline" onClick={addToGoogleCalendar} className="flex-1">
+                <Button variant="outline" onClick={addToGoogleCalendar} className="flex-1 h-12 md:h-10 active:scale-[0.98] transition-transform">
                   <CalendarIcon className="h-4 w-4 mr-1" /> Google Calendar
                 </Button>
               </div>
@@ -247,8 +236,7 @@ export default function BookingConfirm() {
             </motion.div>
           )}
         </div>
-        <Footer />
-      </div>
+      </MobileLayout>
     </PageTransition>
   );
 }
