@@ -135,7 +135,7 @@ serve(async (req) => {
         body: JSON.stringify({
           from: "BookMySpot <reservas@resend.dev>",
           to: [client_email],
-          subject: `Reserva confirmada con ${professional_name}`,
+          subject: emailSubject,
           html: htmlBody,
         }),
       });
