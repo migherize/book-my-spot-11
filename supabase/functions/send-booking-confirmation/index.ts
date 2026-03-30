@@ -42,6 +42,14 @@ serve(async (req) => {
       day: "numeric",
     });
 
+    const headerBg = isCancellation
+      ? "background:linear-gradient(135deg,#dc2626,#ef4444)"
+      : "background:linear-gradient(135deg,#6366f1,#8b5cf6)";
+    const headerText = isCancellation ? "❌ Cita Cancelada" : "✅ Reserva Confirmada";
+    const introText = isCancellation
+      ? "Tu cita ha sido cancelada. Aquí tienes los detalles:"
+      : "Tu cita ha sido confirmada exitosamente. Aquí tienes los detalles:";
+
     const htmlBody = `
 <!DOCTYPE html>
 <html lang="es">
@@ -51,8 +59,8 @@ serve(async (req) => {
     <tr><td align="center">
       <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
         <!-- Header -->
-        <tr><td style="background:linear-gradient(135deg,#6366f1,#8b5cf6);padding:32px;text-align:center;">
-          <h1 style="margin:0;color:#ffffff;font-size:22px;">✅ Reserva Confirmada</h1>
+        <tr><td style="${headerBg};padding:32px;text-align:center;">
+          <h1 style="margin:0;color:#ffffff;font-size:22px;">${headerText}</h1>
         </td></tr>
         <!-- Body -->
         <tr><td style="padding:32px;">
