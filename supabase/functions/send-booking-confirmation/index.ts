@@ -115,7 +115,11 @@ serve(async (req) => {
     // Use Supabase's built-in email via the Auth admin API isn't available for transactional,
     // so we log the email for now and return success. 
     // In production, integrate a transactional email provider.
-    console.log(`📧 Booking confirmation email prepared for: ${client_email}`);
+    const emailType = isCancellation ? "cancellation" : "confirmation";
+    const emailSubject = isCancellation
+      ? `Cita cancelada con ${professional_name}`
+      : `Reserva confirmada con ${professional_name}`;
+    console.log(`📧 Booking ${emailType} email prepared for: ${client_email}`);
     console.log(`   Professional: ${professional_name} | Date: ${formattedDate} | Time: ${booking_time}`);
 
     // Try to send via Resend if API key is available, otherwise just log
