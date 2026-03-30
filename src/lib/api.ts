@@ -252,11 +252,3 @@ export async function fetchUserBookings(userId: string) {
   if (error) throw error;
   return data;
 }
-  const { data, error } = await supabase
-    .from("bookings")
-    .select("*, professionals(name, photo, specialty, location)")
-    .eq("client_user_id", userId)
-    .order("booking_date", { ascending: false });
-  if (error) throw error;
-  return data;
-}
