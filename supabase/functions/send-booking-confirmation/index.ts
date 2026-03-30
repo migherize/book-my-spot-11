@@ -12,6 +12,7 @@ serve(async (req) => {
   }
 
   try {
+    const body = await req.json();
     const {
       client_name,
       client_email,
@@ -23,7 +24,9 @@ serve(async (req) => {
       price,
       currency,
       location,
-    } = await req.json();
+      type,
+    } = body;
+    const isCancellation = type === "cancellation";
 
     if (!client_email || !client_name || !professional_name) {
       return new Response(
@@ -39,6 +42,14 @@ serve(async (req) => {
       day: "numeric",
     });
 
+    const headerBg = isCancellation
+      ? "background:linear-gradient(135deg,#dc2626,#ef4444)"
+      : "background:linear-gradient(135deg,#6366f1,#8b5cf6)";
+    const headerText = isCancellation ? "❌ Cita Cancelada" : "✅ Reserva Confirmada";
+    const introText = isCancellation
+      ? "Tu cita ha sido cancelada. Aquí tienes los detalles:"
+      : "Tu cita ha sido confirmada exitosamente. Aquí tienes los detalles:";
+
     const htmlBody = `
 <!DOCTYPE html>
 <html lang="es">
@@ -48,14 +59,14 @@ serve(async (req) => {
     <tr><td align="center">
       <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
         <!-- Header -->
-        <tr><td style="background:linear-gradient(135deg,#6366f1,#8b5cf6);padding:32px;text-align:center;">
-          <h1 style="margin:0;color:#ffffff;font-size:22px;">✅ Reserva Confirmada</h1>
+        <tr><td style="${headerBg};padding:32px;text-align:center;">
+          <h1 style="margin:0;color:#ffffff;font-size:22px;">${headerText}</h1>
         </td></tr>
         <!-- Body -->
         <tr><td style="padding:32px;">
           <p style="margin:0 0 16px;color:#18181b;font-size:16px;">Hola <strong>${client_name}</strong>,</p>
           <p style="margin:0 0 24px;color:#52525b;font-size:14px;line-height:1.6;">
-            Tu cita ha sido confirmada exitosamente. Aquí tienes los detalles:
+            ${introText}
           </p>
           <table width="100%" cellpadding="12" cellspacing="0" style="background:#f9fafb;border-radius:8px;margin-bottom:24px;">
             <tr>
@@ -104,7 +115,11 @@ serve(async (req) => {
     // Use Supabase's built-in email via the Auth admin API isn't available for transactional,
     // so we log the email for now and return success. 
     // In production, integrate a transactional email provider.
-    console.log(`📧 Booking confirmation email prepared for: ${client_email}`);
+    const emailType = isCancellation ? "cancellation" : "confirmation";
+    const emailSubject = isCancellation
+      ? `Cita cancelada con ${professional_name}`
+      : `Reserva confirmada con ${professional_name}`;
+    console.log(`📧 Booking ${emailType} email prepared for: ${client_email}`);
     console.log(`   Professional: ${professional_name} | Date: ${formattedDate} | Time: ${booking_time}`);
 
     // Try to send via Resend if API key is available, otherwise just log
@@ -120,7 +135,7 @@ serve(async (req) => {
         body: JSON.stringify({
           from: "BookMySpot <reservas@resend.dev>",
           to: [client_email],
-          subject: `Reserva confirmada con ${professional_name}`,
+          subject: emailSubject,
           html: htmlBody,
         }),
       });
@@ -146,7 +161,7 @@ serve(async (req) => {
         success: true,
         email_sent: false,
         reason: "No email provider configured. Confirmation logged on server.",
-        email_preview: { to: client_email, subject: `Reserva confirmada con ${professional_name}` },
+        email_preview: { to: client_email, subject: emailSubject },
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
