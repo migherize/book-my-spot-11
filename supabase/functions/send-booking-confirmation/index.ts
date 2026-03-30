@@ -66,7 +66,7 @@ serve(async (req) => {
         <tr><td style="padding:32px;">
           <p style="margin:0 0 16px;color:#18181b;font-size:16px;">Hola <strong>${client_name}</strong>,</p>
           <p style="margin:0 0 24px;color:#52525b;font-size:14px;line-height:1.6;">
-            Tu cita ha sido confirmada exitosamente. Aquí tienes los detalles:
+            ${introText}
           </p>
           <table width="100%" cellpadding="12" cellspacing="0" style="background:#f9fafb;border-radius:8px;margin-bottom:24px;">
             <tr>
