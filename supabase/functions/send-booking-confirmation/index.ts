@@ -161,7 +161,7 @@ serve(async (req) => {
         success: true,
         email_sent: false,
         reason: "No email provider configured. Confirmation logged on server.",
-        email_preview: { to: client_email, subject: `Reserva confirmada con ${professional_name}` },
+        email_preview: { to: client_email, subject: emailSubject },
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
