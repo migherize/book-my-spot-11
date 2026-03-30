@@ -6,6 +6,7 @@ import { Calendar } from "@/components/ui/calendar";
 import MobileLayout from "@/components/MobileLayout";
 import PageTransition from "@/components/PageTransition";
 import { fetchProfessionalById, fetchAvailableSlots } from "@/lib/api";
+import ReviewSection from "@/components/ReviewSection";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
