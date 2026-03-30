@@ -1,12 +1,24 @@
+import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { fetchUserBookings } from "@/lib/api";
-import { useQuery } from "@tanstack/react-query";
+import { fetchUserBookings, cancelBooking, sendBookingCancellation } from "@/lib/api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import MobileLayout from "@/components/MobileLayout";
 import PageTransition from "@/components/PageTransition";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, Clock } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { CalendarDays, Clock, X } from "lucide-react";
+import { toast } from "sonner";
 
 const statusLabels: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
   confirmed: { label: "Confirmada", variant: "default" },
@@ -18,11 +30,36 @@ const statusLabels: Record<string, { label: string; variant: "default" | "second
 export default function MyBookings() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [cancelTarget, setCancelTarget] = useState<any>(null);
 
   const { data: bookings = [], isLoading } = useQuery({
     queryKey: ["my-bookings", user?.id],
     queryFn: () => fetchUserBookings(user!.id),
     enabled: !!user,
+  });
+
+  const cancelMutation = useMutation({
+    mutationFn: async (booking: any) => {
+      const updated = await cancelBooking(booking.id);
+      await sendBookingCancellation({
+        client_name: booking.client_name,
+        client_email: booking.client_email,
+        professional_name: booking.professionals?.name ?? "Profesional",
+        professional_specialty: booking.professionals?.specialty ?? "",
+        booking_date: booking.booking_date,
+        booking_time: booking.booking_time,
+      });
+      return updated;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["my-bookings"] });
+      toast.success("Cita cancelada correctamente");
+      setCancelTarget(null);
+    },
+    onError: () => {
+      toast.error("No se pudo cancelar la cita");
+    },
   });
 
   if (!loading && !user) {
@@ -66,6 +103,7 @@ export default function MyBookings() {
               {bookings.map((b: any) => {
                 const status = statusLabels[b.status] ?? statusLabels.confirmed;
                 const date = new Date(b.booking_date + "T00:00:00");
+                const canCancel = b.status === "confirmed" || b.status === "pending";
                 return (
                   <div key={b.id} className="touch-ripple rounded-2xl border border-border bg-card p-4 md:p-5 active:scale-[0.99] transition-transform">
                     <div className="flex items-start justify-between gap-3">
@@ -91,12 +129,54 @@ export default function MyBookings() {
                       </span>
                       <span className="font-medium text-foreground ml-auto">${b.price}</span>
                     </div>
+                    {canCancel && (
+                      <div className="mt-3 pt-3 border-t border-border">
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          className="w-full md:w-auto"
+                          onClick={() => setCancelTarget(b)}
+                        >
+                          <X className="h-4 w-4 mr-1" />
+                          Cancelar cita
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 );
               })}
             </div>
           )}
         </div>
+
+        <AlertDialog open={!!cancelTarget} onOpenChange={(open) => !open && setCancelTarget(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>¿Cancelar esta cita?</AlertDialogTitle>
+              <AlertDialogDescription>
+                {cancelTarget && (
+                  <>
+                    Tu cita con <strong>{cancelTarget.professionals?.name}</strong> el{" "}
+                    {new Date(cancelTarget.booking_date + "T00:00:00").toLocaleDateString("es-ES", {
+                      weekday: "long", day: "numeric", month: "long",
+                    })}{" "}
+                    a las {cancelTarget.booking_time?.slice(0, 5)} será cancelada. Esta acción no se puede deshacer.
+                  </>
+                )}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Volver</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={() => cancelTarget && cancelMutation.mutate(cancelTarget)}
+                disabled={cancelMutation.isPending}
+              >
+                {cancelMutation.isPending ? "Cancelando..." : "Sí, cancelar"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </MobileLayout>
     </PageTransition>
   );

@@ -170,6 +170,36 @@ export async function sendBookingConfirmation(params: {
   }
 }
 
+export async function cancelBooking(bookingId: string) {
+  const { data, error } = await supabase
+    .from("bookings")
+    .update({ status: "cancelled" as any })
+    .eq("id", bookingId)
+    .select("*, professionals(name, specialty, location)")
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function sendBookingCancellation(params: {
+  client_name: string;
+  client_email: string;
+  professional_name: string;
+  professional_specialty: string;
+  booking_date: string;
+  booking_time: string;
+}) {
+  try {
+    const { data, error } = await supabase.functions.invoke("send-booking-confirmation", {
+      body: { ...params, type: "cancellation" },
+    });
+    if (error) console.error("Cancellation email error:", error);
+    return data;
+  } catch (err) {
+    console.error("Failed to send cancellation email:", err);
+  }
+}
+
 export async function fetchUserBookings(userId: string) {
   const { data, error } = await supabase
     .from("bookings")

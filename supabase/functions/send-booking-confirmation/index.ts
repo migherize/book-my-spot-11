@@ -12,6 +12,7 @@ serve(async (req) => {
   }
 
   try {
+    const body = await req.json();
     const {
       client_name,
       client_email,
@@ -23,7 +24,9 @@ serve(async (req) => {
       price,
       currency,
       location,
-    } = await req.json();
+      type,
+    } = body;
+    const isCancellation = type === "cancellation";
 
     if (!client_email || !client_name || !professional_name) {
       return new Response(
