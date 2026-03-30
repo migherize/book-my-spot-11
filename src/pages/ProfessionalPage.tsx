@@ -6,6 +6,7 @@ import { Calendar } from "@/components/ui/calendar";
 import MobileLayout from "@/components/MobileLayout";
 import PageTransition from "@/components/PageTransition";
 import { fetchProfessionalById, fetchAvailableSlots } from "@/lib/api";
+import ReviewSection from "@/components/ReviewSection";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -104,6 +105,8 @@ export default function ProfessionalPage() {
                 <h2 className="font-display font-semibold mb-2">Precio</h2>
                 <p className="text-2xl font-bold text-foreground">${p.price} <span className="text-sm font-normal text-muted-foreground">/ sesión ({p.duration} min)</span></p>
               </div>
+
+              <ReviewSection professionalId={p.id} />
             </div>
 
             <div className="rounded-xl border border-border bg-card p-4 md:p-5 space-y-4 md:space-y-5 h-fit md:sticky md:top-24">

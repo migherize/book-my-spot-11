@@ -200,6 +200,49 @@ export async function sendBookingCancellation(params: {
   }
 }
 
+// ===== Reviews =====
+export interface Review {
+  id: string;
+  professional_id: string;
+  user_id: string;
+  reviewer_name: string;
+  rating: number;
+  comment: string | null;
+  created_at: string;
+}
+
+export async function fetchReviews(professionalId: string): Promise<Review[]> {
+  const { data, error } = await supabase
+    .from("reviews")
+    .select("*")
+    .eq("professional_id", professionalId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as Review[];
+}
+
+export async function createReview(params: {
+  professional_id: string;
+  user_id: string;
+  reviewer_name: string;
+  rating: number;
+  comment?: string;
+}) {
+  const { data, error } = await supabase.from("reviews").insert(params).select().single();
+  if (error) {
+    if (error.code === "23505") {
+      throw new Error("Ya has dejado una reseña para este profesional.");
+    }
+    throw error;
+  }
+  return data;
+}
+
+export async function deleteReview(reviewId: string) {
+  const { error } = await supabase.from("reviews").delete().eq("id", reviewId);
+  if (error) throw error;
+}
+
 export async function fetchUserBookings(userId: string) {
   const { data, error } = await supabase
     .from("bookings")
