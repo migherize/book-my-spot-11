@@ -97,6 +97,51 @@ export type Database = {
         }
         Relationships: []
       }
+      professional_accounts: {
+        Row: {
+          created_at: string
+          description: string | null
+          free_booking_limit: number
+          free_bookings_used: number
+          id: string
+          location: string
+          onboarding_completed: boolean
+          professional_name: string
+          specialty: string
+          subscription_active: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          free_booking_limit?: number
+          free_bookings_used?: number
+          id?: string
+          location: string
+          onboarding_completed?: boolean
+          professional_name: string
+          specialty: string
+          subscription_active?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          free_booking_limit?: number
+          free_bookings_used?: number
+          id?: string
+          location?: string
+          onboarding_completed?: boolean
+          professional_name?: string
+          specialty?: string
+          subscription_active?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       professionals: {
         Row: {
           category_type: Database["public"]["Enums"]["category_type"]
@@ -294,6 +339,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      activate_professional_account: {
+        Args: {
+          p_description?: string
+          p_location: string
+          p_professional_name: string
+          p_specialty: string
+        }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
