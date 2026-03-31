@@ -339,14 +339,39 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      activate_professional_account: {
-        Args: {
-          p_description?: string
-          p_location: string
-          p_professional_name: string
-          p_specialty: string
-        }
-        Returns: string
+      activate_professional_account:
+        | {
+            Args: {
+              p_category_type: Database["public"]["Enums"]["category_type"]
+              p_description?: string
+              p_location: string
+              p_professional_name: string
+              p_specialty: string
+              p_subcategory_id: string
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              p_description?: string
+              p_location: string
+              p_professional_name: string
+              p_specialty: string
+            }
+            Returns: string
+          }
+      get_professional_booking_access: {
+        Args: { p_professional_id: string }
+        Returns: {
+          accepting_bookings: boolean
+          free_booking_limit: number
+          free_bookings_remaining: number
+          free_bookings_used: number
+          is_near_limit: boolean
+          limit_reached: boolean
+          professional_id: string
+          subscription_active: boolean
+        }[]
       }
       has_role: {
         Args: {
