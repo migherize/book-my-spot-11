@@ -11,6 +11,7 @@ import ProfessionalPage from "./pages/ProfessionalPage.tsx";
 import BookingConfirm from "./pages/BookingConfirm.tsx";
 import AuthPage from "./pages/AuthPage.tsx";
 import MyBookings from "./pages/MyBookings.tsx";
+import ProfessionalOnboarding from "./pages/ProfessionalOnboarding.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ function AnimatedRoutes() {
         <Route path="/professional/:id" element={<ProfessionalPage />} />
         <Route path="/booking/confirm" element={<BookingConfirm />} />
         <Route path="/auth" element={<AuthPage />} />
+        <Route path="/professional-onboarding" element={<ProfessionalOnboarding />} />
         <Route path="/my-bookings" element={<MyBookings />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

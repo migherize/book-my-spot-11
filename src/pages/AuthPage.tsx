@@ -18,14 +18,15 @@ export default function AuthPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
-  const redirect = searchParams.get("redirect") || "/";
+  const redirect = searchParams.get("redirect");
+  const nextPath = redirect || "/professional-onboarding";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     if (mode === "signup") {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -36,15 +37,20 @@ export default function AuthPage() {
       if (error) {
         toast({ title: "Error", description: error.message, variant: "destructive" });
       } else {
-        toast({ title: "¡Cuenta creada!", description: "Ya puedes iniciar sesión." });
-        navigate(redirect);
+        if (data.session) {
+          toast({ title: "¡Cuenta creada!", description: "Ahora puedes activar tu perfil profesional si lo deseas." });
+          navigate(nextPath);
+        } else {
+          toast({ title: "¡Cuenta creada!", description: "Revisa tu email para verificar tu cuenta y luego iniciar sesión." });
+          setMode("login");
+        }
       }
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
         toast({ title: "Error", description: error.message, variant: "destructive" });
       } else {
-        navigate(redirect);
+        navigate(nextPath);
       }
     }
     setLoading(false);

@@ -3,10 +3,12 @@ import { Menu, X, CalendarDays, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useMockProfessional } from "@/lib/mockProfessional";
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, profile, signOut } = useAuth();
+  const mockProfessional = useMockProfessional(user?.id ?? null);
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -33,6 +35,9 @@ export default function Navbar() {
         <div className="hidden items-center gap-3 md:flex">
           {user ? (
             <>
+              <Button variant="ghost" size="sm" onClick={() => navigate("/professional-onboarding")}>
+                {mockProfessional ? "Panel pro" : "Ser profesional"}
+              </Button>
               <Button variant="ghost" size="sm" onClick={() => navigate("/my-bookings")}>
                 <CalendarDays className="mr-1 h-4 w-4" /> Mis citas
               </Button>
@@ -63,6 +68,9 @@ export default function Navbar() {
             <hr className="border-border" />
             {user ? (
               <>
+                <Button variant="ghost" size="sm" className="justify-start" onClick={() => { navigate("/professional-onboarding"); setMobileOpen(false); }}>
+                  {mockProfessional ? "Panel pro" : "Ser profesional"}
+                </Button>
                 <Button variant="ghost" size="sm" className="justify-start" onClick={() => { navigate("/my-bookings"); setMobileOpen(false); }}>
                   <CalendarDays className="mr-1 h-4 w-4" /> Mis citas
                 </Button>

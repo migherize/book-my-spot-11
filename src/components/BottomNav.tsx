@@ -17,7 +17,7 @@ export default function BottomNav() {
 
   const handleTap = (tab: typeof tabs[0]) => {
     if (tab.label === "Perfil" && user) {
-      navigate("/my-bookings");
+      navigate("/professional-onboarding");
     } else {
       navigate(tab.path);
     }
