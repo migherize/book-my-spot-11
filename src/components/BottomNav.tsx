@@ -13,11 +13,11 @@ const tabs = [
 export default function BottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, professionalState } = useAuth();
 
   const handleTap = (tab: typeof tabs[0]) => {
     if (tab.label === "Perfil" && user) {
-      navigate("/professional-onboarding");
+      navigate(professionalState ? "/professional-onboarding" : "/my-bookings");
     } else {
       navigate(tab.path);
     }

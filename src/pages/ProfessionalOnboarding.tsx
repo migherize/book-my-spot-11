@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { BriefcaseBusiness, CheckCircle2, Crown, Sparkles, UserRoundCheck } from "lucide-react";
 import MobileLayout from "@/components/MobileLayout";
@@ -14,32 +14,45 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { categories } from "@/data/mockData";
-import {
-  activateMockSubscription,
-  getMockProfessionalPayload,
-  incrementMockBookings,
-  resetMockProfessional,
-  saveMockProfessional,
-  useMockProfessional,
-} from "@/lib/mockProfessional";
 
 export default function ProfessionalOnboarding() {
   const navigate = useNavigate();
-  const { user, loading, profile } = useAuth();
+  const {
+    user,
+    loading,
+    profile,
+    professionalState,
+    professionalMockTemplate,
+    activateProfessionalProfile,
+    simulateProfessionalBooking,
+    activateProfessionalSubscription,
+    resetProfessionalProgress,
+  } = useAuth();
   const { toast } = useToast();
-  const professionalState = useMockProfessional(user?.id ?? null);
-  const [professionalName, setProfessionalName] = useState(profile?.full_name ?? "");
-  const [specialty, setSpecialty] = useState("");
-  const [location, setLocation] = useState("");
-  const [description, setDescription] = useState("");
-  const [categoryType, setCategoryType] = useState<"health" | "beauty" | "wellness">("health");
-  const [subcategoryId, setSubcategoryId] = useState("");
+  const [professionalName, setProfessionalName] = useState(profile?.full_name ?? professionalMockTemplate.professionalName);
+  const [specialty, setSpecialty] = useState(professionalMockTemplate.specialty);
+  const [location, setLocation] = useState(professionalMockTemplate.location);
+  const [description, setDescription] = useState(professionalMockTemplate.description);
+  const [categoryType, setCategoryType] = useState<"health" | "beauty" | "wellness">(professionalMockTemplate.categoryType);
+  const [subcategoryId, setSubcategoryId] = useState(professionalMockTemplate.subcategoryId);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+
+  useEffect(() => {
+    if (professionalState || !profile?.full_name) return;
+    setProfessionalName((current) => current === professionalMockTemplate.professionalName ? profile.full_name ?? current : current);
+  }, [professionalMockTemplate.professionalName, professionalState, profile?.full_name]);
 
   const selectedCategory = useMemo(
     () => categories.find((category) => category.type === categoryType) ?? categories[0],
     [categoryType],
   );
+
+  const mockPayload = {
+    professionalStatus: professionalState ?? {
+      userId: user?.id ?? "demo-user",
+      ...professionalMockTemplate,
+    },
+  };
 
   const freeLimit = professionalState?.freeBookingLimit ?? 5;
   const freeUsed = professionalState?.freeBookingsUsed ?? 0;
@@ -50,11 +63,11 @@ export default function ProfessionalOnboarding() {
 
   const handleActivateProfessional = () => {
     if (!user) {
-      navigate("/auth?redirect=/professional-onboarding");
+      navigate("/auth?mode=signup&redirect=/professional-onboarding");
       return;
     }
 
-    if (!professionalName || !specialty || !location || !subcategoryId || !acceptedTerms) {
+    if (!professionalName.trim() || !specialty.trim() || !location.trim() || !subcategoryId || !acceptedTerms) {
       toast({
         title: "Completa el onboarding",
         description: "Rellena los datos básicos y acepta los términos para activar tu perfil profesional.",
@@ -63,18 +76,13 @@ export default function ProfessionalOnboarding() {
       return;
     }
 
-    saveMockProfessional({
-      userId: user.id,
-      professionalName,
-      specialty,
-      location,
-      description,
+    activateProfessionalProfile({
+      professionalName: professionalName.trim(),
+      specialty: specialty.trim(),
+      location: location.trim(),
+      description: description.trim(),
       categoryType,
       subcategoryId,
-      freeBookingLimit: 5,
-      freeBookingsUsed: 0,
-      subscriptionActive: false,
-      onboardingCompleted: true,
     });
 
     toast({
@@ -84,8 +92,7 @@ export default function ProfessionalOnboarding() {
   };
 
   const handleSimulateBooking = () => {
-    if (!user) return;
-    const updated = incrementMockBookings(user.id);
+    const updated = simulateProfessionalBooking();
     if (!updated) return;
 
     if (!updated.subscriptionActive && updated.freeBookingsUsed >= updated.freeBookingLimit) {
@@ -105,8 +112,8 @@ export default function ProfessionalOnboarding() {
   };
 
   const handleActivateSubscription = () => {
-    if (!user) return;
-    activateMockSubscription(user.id);
+    const updated = activateProfessionalSubscription();
+    if (!updated) return;
     toast({
       title: "Plan mensual demo activado",
       description: "El mock ya no bloquea nuevas citas. Luego reemplaza este botón por tu checkout real.",
@@ -114,8 +121,8 @@ export default function ProfessionalOnboarding() {
   };
 
   const handleResetMock = () => {
-    if (!user) return;
-    resetMockProfessional(user.id);
+    const updated = resetProfessionalProgress();
+    if (!updated) return;
     toast({
       title: "Mock reiniciado",
       description: "Volviste al estado freemium inicial con 5 citas gratis.",
@@ -149,7 +156,8 @@ export default function ProfessionalOnboarding() {
               Inicia sesión para probar el onboarding mock, el límite de 5 citas gratis y el paywall demo.
             </p>
             <div className="mt-6 flex justify-center gap-3">
-              <Button onClick={() => navigate("/auth?redirect=/professional-onboarding")}>Iniciar sesión</Button>
+              <Button onClick={() => navigate("/auth?mode=signup&redirect=/professional-onboarding")}>Crear cuenta</Button>
+              <Button variant="outline" onClick={() => navigate("/auth?redirect=/professional-onboarding")}>Ya tengo cuenta</Button>
               <Button variant="outline" asChild>
                 <Link to="/">Volver al inicio</Link>
               </Button>
@@ -265,6 +273,9 @@ export default function ProfessionalOnboarding() {
                   <Button size="lg" className="w-full" onClick={handleActivateProfessional}>
                     Paso 3 · Convertirme en profesional
                   </Button>
+                  <Button size="lg" variant="outline" className="w-full" onClick={() => navigate("/")}>
+                    Soy cliente / Omitir
+                  </Button>
                 </div>
               ) : (
                 <div className="rounded-3xl border border-border bg-card p-6 md:p-8 space-y-5">
@@ -346,21 +357,7 @@ export default function ProfessionalOnboarding() {
                   <p className="mt-2"><span className="font-medium text-foreground">Objeto:</span> <code>professionalStatus</code></p>
                 </div>
                 <pre className="mt-4 overflow-x-auto rounded-2xl bg-muted p-4 text-xs text-muted-foreground">
-{JSON.stringify(getMockProfessionalPayload(user.id) ?? {
-  professionalStatus: {
-    userId: user.id,
-    professionalName: "Dra. Paula Ortega",
-    specialty: "Psicología",
-    location: "Madrid, España",
-    description: "Atención personalizada para terapia online y presencial.",
-    categoryType: "wellness",
-    subcategoryId: "psychology",
-    freeBookingLimit: 5,
-    freeBookingsUsed: 0,
-    subscriptionActive: false,
-    onboardingCompleted: true,
-  },
-}, null, 2)}
+{JSON.stringify(mockPayload, null, 2)}
                 </pre>
               </div>
             </aside>
