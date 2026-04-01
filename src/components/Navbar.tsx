@@ -3,12 +3,10 @@ import { Menu, X, CalendarDays, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useMockProfessional } from "@/lib/mockProfessional";
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { user, profile, signOut } = useAuth();
-  const mockProfessional = useMockProfessional(user?.id ?? null);
+  const { user, profile, professionalState, signOut } = useAuth();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -36,7 +34,7 @@ export default function Navbar() {
           {user ? (
             <>
               <Button variant="ghost" size="sm" onClick={() => navigate("/professional-onboarding")}>
-                {mockProfessional ? "Panel pro" : "Ser profesional"}
+                {professionalState ? "Panel pro" : "Ser profesional"}
               </Button>
               <Button variant="ghost" size="sm" onClick={() => navigate("/my-bookings")}>
                 <CalendarDays className="mr-1 h-4 w-4" /> Mis citas
@@ -49,7 +47,7 @@ export default function Navbar() {
           ) : (
             <>
               <Button variant="ghost" size="sm" onClick={() => navigate("/auth")}>Iniciar sesión</Button>
-              <Button size="sm" onClick={() => navigate("/auth")}>Soy profesional</Button>
+              <Button size="sm" onClick={() => navigate("/auth?mode=signup&redirect=/professional-onboarding")}>Soy profesional</Button>
             </>
           )}
         </div>
@@ -69,7 +67,7 @@ export default function Navbar() {
             {user ? (
               <>
                 <Button variant="ghost" size="sm" className="justify-start" onClick={() => { navigate("/professional-onboarding"); setMobileOpen(false); }}>
-                  {mockProfessional ? "Panel pro" : "Ser profesional"}
+                  {professionalState ? "Panel pro" : "Ser profesional"}
                 </Button>
                 <Button variant="ghost" size="sm" className="justify-start" onClick={() => { navigate("/my-bookings"); setMobileOpen(false); }}>
                   <CalendarDays className="mr-1 h-4 w-4" /> Mis citas
@@ -81,7 +79,7 @@ export default function Navbar() {
             ) : (
               <>
                 <Button variant="ghost" size="sm" className="justify-start" onClick={() => { navigate("/auth"); setMobileOpen(false); }}>Iniciar sesión</Button>
-                <Button size="sm" onClick={() => { navigate("/auth"); setMobileOpen(false); }}>Soy profesional</Button>
+                <Button size="sm" onClick={() => { navigate("/auth?mode=signup&redirect=/professional-onboarding"); setMobileOpen(false); }}>Soy profesional</Button>
               </>
             )}
           </div>
