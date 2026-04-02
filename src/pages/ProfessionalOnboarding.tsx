@@ -172,7 +172,7 @@ export default function ProfessionalOnboarding() {
     <PageTransition>
       <MobileLayout title="Onboarding profesional" showBack={false}>
         <div className="container mx-auto max-w-5xl px-4 py-6 md:py-10">
-          <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="max-w-2xl mx-auto space-y-6">
             <section className="space-y-6">
               <div className="rounded-3xl border border-border bg-card p-6 md:p-8">
                 <Badge variant="secondary" className="mb-4">Usuario normal por defecto</Badge>
