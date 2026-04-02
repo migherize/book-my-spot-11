@@ -47,12 +47,6 @@ export default function ProfessionalOnboarding() {
     [categoryType],
   );
 
-  const mockPayload = {
-    professionalStatus: professionalState ?? {
-      userId: user?.id ?? "demo-user",
-      ...professionalMockTemplate,
-    },
-  };
 
   const freeLimit = professionalState?.freeBookingLimit ?? 5;
   const freeUsed = professionalState?.freeBookingsUsed ?? 0;
