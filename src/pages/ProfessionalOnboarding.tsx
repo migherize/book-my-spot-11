@@ -47,12 +47,6 @@ export default function ProfessionalOnboarding() {
     [categoryType],
   );
 
-  const mockPayload = {
-    professionalStatus: professionalState ?? {
-      userId: user?.id ?? "demo-user",
-      ...professionalMockTemplate,
-    },
-  };
 
   const freeLimit = professionalState?.freeBookingLimit ?? 5;
   const freeUsed = professionalState?.freeBookingsUsed ?? 0;
@@ -172,7 +166,7 @@ export default function ProfessionalOnboarding() {
     <PageTransition>
       <MobileLayout title="Onboarding profesional" showBack={false}>
         <div className="container mx-auto max-w-5xl px-4 py-6 md:py-10">
-          <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="max-w-2xl mx-auto space-y-6">
             <section className="space-y-6">
               <div className="rounded-3xl border border-border bg-card p-6 md:p-8">
                 <Badge variant="secondary" className="mb-4">Usuario normal por defecto</Badge>
@@ -316,8 +310,8 @@ export default function ProfessionalOnboarding() {
                       Simular cita gestionada
                     </Button>
                     {!professionalState.subscriptionActive && (
-                      <Button size="lg" variant="outline" onClick={handleActivateSubscription}>
-                        Activar plan mensual (mock)
+                      <Button size="lg" variant="outline" className="whitespace-normal text-center" onClick={handleActivateSubscription}>
+                        Activar plan mensual
                       </Button>
                     )}
                   </div>
@@ -345,22 +339,6 @@ export default function ProfessionalOnboarding() {
                 </div>
               )}
             </section>
-
-            <aside className="space-y-6">
-              <div className="rounded-3xl border border-border bg-card p-6 md:sticky md:top-24">
-                <h2 className="font-display text-xl font-bold">Dato mock listo para tu API</h2>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Este flujo guarda un objeto en localStorage para que siempre funcione mientras preparas el backend real.
-                </p>
-                <div className="mt-4 rounded-2xl bg-muted p-4 text-sm">
-                  <p><span className="font-medium text-foreground">Key:</span> <code>agendapro_professional_mock_v1</code></p>
-                  <p className="mt-2"><span className="font-medium text-foreground">Objeto:</span> <code>professionalStatus</code></p>
-                </div>
-                <pre className="mt-4 overflow-x-auto rounded-2xl bg-muted p-4 text-xs text-muted-foreground">
-{JSON.stringify(mockPayload, null, 2)}
-                </pre>
-              </div>
-            </aside>
           </div>
         </div>
       </MobileLayout>
