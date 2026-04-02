@@ -316,8 +316,8 @@ export default function ProfessionalOnboarding() {
                       Simular cita gestionada
                     </Button>
                     {!professionalState.subscriptionActive && (
-                      <Button size="lg" variant="outline" onClick={handleActivateSubscription}>
-                        Activar plan mensual (mock)
+                      <Button size="lg" variant="outline" className="whitespace-normal text-center" onClick={handleActivateSubscription}>
+                        Activar plan mensual
                       </Button>
                     )}
                   </div>
