@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      booking_holds: {
+        Row: {
+          booking_date: string
+          booking_time: string
+          client_user_id: string
+          created_at: string
+          expires_at: string
+          id: string
+          professional_id: string
+          status: string
+        }
+        Insert: {
+          booking_date: string
+          booking_time: string
+          client_user_id: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          professional_id: string
+          status?: string
+        }
+        Update: {
+          booking_date?: string
+          booking_time?: string
+          client_user_id?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          professional_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_holds_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bookings: {
         Row: {
           booking_date: string
@@ -97,6 +138,72 @@ export type Database = {
         }
         Relationships: []
       }
+      payments: {
+        Row: {
+          amount: number
+          booking_id: string
+          client_user_id: string
+          created_at: string
+          currency: string
+          expires_at: string | null
+          id: string
+          method: Database["public"]["Enums"]["payment_method"]
+          notes: string | null
+          professional_id: string
+          receipt_url: string | null
+          reference_number: string | null
+          status: Database["public"]["Enums"]["payment_status"]
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          booking_id: string
+          client_user_id: string
+          created_at?: string
+          currency?: string
+          expires_at?: string | null
+          id?: string
+          method: Database["public"]["Enums"]["payment_method"]
+          notes?: string | null
+          professional_id: string
+          receipt_url?: string | null
+          reference_number?: string | null
+          status?: Database["public"]["Enums"]["payment_status"]
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          booking_id?: string
+          client_user_id?: string
+          created_at?: string
+          currency?: string
+          expires_at?: string | null
+          id?: string
+          method?: Database["public"]["Enums"]["payment_method"]
+          notes?: string | null
+          professional_id?: string
+          receipt_url?: string | null
+          reference_number?: string | null
+          status?: Database["public"]["Enums"]["payment_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       professional_accounts: {
         Row: {
           created_at: string
@@ -141,6 +248,68 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      professional_payment_settings: {
+        Row: {
+          accepted_methods: Database["public"]["Enums"]["payment_method"][]
+          bank_account_name: string | null
+          bank_account_number: string | null
+          bank_name: string | null
+          binance_email: string | null
+          created_at: string
+          currency_preference: string
+          id: string
+          pago_movil_banco: string | null
+          pago_movil_cedula: string | null
+          pago_movil_phone: string | null
+          professional_id: string
+          requires_prepayment: boolean
+          updated_at: string
+          zelle_email: string | null
+        }
+        Insert: {
+          accepted_methods?: Database["public"]["Enums"]["payment_method"][]
+          bank_account_name?: string | null
+          bank_account_number?: string | null
+          bank_name?: string | null
+          binance_email?: string | null
+          created_at?: string
+          currency_preference?: string
+          id?: string
+          pago_movil_banco?: string | null
+          pago_movil_cedula?: string | null
+          pago_movil_phone?: string | null
+          professional_id: string
+          requires_prepayment?: boolean
+          updated_at?: string
+          zelle_email?: string | null
+        }
+        Update: {
+          accepted_methods?: Database["public"]["Enums"]["payment_method"][]
+          bank_account_name?: string | null
+          bank_account_number?: string | null
+          bank_name?: string | null
+          binance_email?: string | null
+          created_at?: string
+          currency_preference?: string
+          id?: string
+          pago_movil_banco?: string | null
+          pago_movil_cedula?: string | null
+          pago_movil_phone?: string | null
+          professional_id?: string
+          requires_prepayment?: boolean
+          updated_at?: string
+          zelle_email?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_payment_settings_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: true
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       professionals: {
         Row: {
@@ -360,6 +529,8 @@ export type Database = {
             }
             Returns: string
           }
+      cleanup_expired_holds: { Args: never; Returns: undefined }
+      expire_pending_payments: { Args: never; Returns: undefined }
       get_professional_booking_access: {
         Args: { p_professional_id: string }
         Returns: {
@@ -380,12 +551,24 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_slot_held: {
+        Args: { p_date: string; p_professional_id: string; p_time: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "client" | "professional" | "admin"
       booking_status: "pending" | "confirmed" | "cancelled" | "completed"
       category_type: "health" | "beauty" | "wellness"
       modality_type: "presencial" | "online"
+      payment_method:
+        | "pago_movil"
+        | "transferencia_bdv"
+        | "transferencia_mercantil"
+        | "binance"
+        | "tarjeta"
+        | "zelle"
+      payment_status: "pending" | "verifying" | "paid" | "rejected" | "expired"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -517,6 +700,15 @@ export const Constants = {
       booking_status: ["pending", "confirmed", "cancelled", "completed"],
       category_type: ["health", "beauty", "wellness"],
       modality_type: ["presencial", "online"],
+      payment_method: [
+        "pago_movil",
+        "transferencia_bdv",
+        "transferencia_mercantil",
+        "binance",
+        "tarjeta",
+        "zelle",
+      ],
+      payment_status: ["pending", "verifying", "paid", "rejected", "expired"],
     },
   },
 } as const
