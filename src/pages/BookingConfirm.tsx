@@ -1,6 +1,7 @@
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { fetchProfessionalById, createBooking, sendBookingConfirmation } from "@/lib/api";
+import { fetchPaymentSettings } from "@/lib/payments";
 import MobileLayout from "@/components/MobileLayout";
 import PageTransition from "@/components/PageTransition";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,12 @@ export default function BookingConfirm() {
   const { data: professional } = useQuery({
     queryKey: ["professional", professionalId],
     queryFn: () => fetchProfessionalById(professionalId),
+    enabled: !!professionalId,
+  });
+
+  const { data: paymentSettings } = useQuery({
+    queryKey: ["paymentSettings", professionalId],
+    queryFn: () => fetchPaymentSettings(professionalId),
     enabled: !!professionalId,
   });
 
@@ -67,6 +74,21 @@ export default function BookingConfirm() {
       navigate(`/auth?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`);
       return;
     }
+
+    // If professional requires prepayment, redirect to payment page
+    if (paymentSettings?.requires_prepayment) {
+      const paymentParams = new URLSearchParams({
+        professional: professionalId,
+        date: date.toISOString().split("T")[0],
+        time,
+        name,
+        email,
+        phone,
+      });
+      navigate(`/booking/payment?${paymentParams.toString()}`);
+      return;
+    }
+
     setSubmitting(true);
     try {
       await createBooking({

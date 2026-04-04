@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X, CalendarDays, LogOut } from "lucide-react";
+import { Menu, X, CalendarDays, LogOut, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -36,6 +36,11 @@ export default function Navbar() {
               <Button variant="ghost" size="sm" onClick={() => navigate("/professional-onboarding")}>
                 {professionalState ? "Panel pro" : "Ser profesional"}
               </Button>
+              {professionalState && (
+                <Button variant="ghost" size="sm" onClick={() => navigate("/payment-settings")}>
+                  <CreditCard className="mr-1 h-4 w-4" /> Pagos
+                </Button>
+              )}
               <Button variant="ghost" size="sm" onClick={() => navigate("/my-bookings")}>
                 <CalendarDays className="mr-1 h-4 w-4" /> Mis citas
               </Button>
@@ -69,6 +74,11 @@ export default function Navbar() {
                 <Button variant="ghost" size="sm" className="justify-start" onClick={() => { navigate("/professional-onboarding"); setMobileOpen(false); }}>
                   {professionalState ? "Panel pro" : "Ser profesional"}
                 </Button>
+                {professionalState && (
+                  <Button variant="ghost" size="sm" className="justify-start" onClick={() => { navigate("/payment-settings"); setMobileOpen(false); }}>
+                    <CreditCard className="mr-1 h-4 w-4" /> Config. pagos
+                  </Button>
+                )}
                 <Button variant="ghost" size="sm" className="justify-start" onClick={() => { navigate("/my-bookings"); setMobileOpen(false); }}>
                   <CalendarDays className="mr-1 h-4 w-4" /> Mis citas
                 </Button>
