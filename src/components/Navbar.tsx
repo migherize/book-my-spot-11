@@ -36,6 +36,11 @@ export default function Navbar() {
               <Button variant="ghost" size="sm" onClick={() => navigate("/professional-onboarding")}>
                 {professionalState ? "Panel pro" : "Ser profesional"}
               </Button>
+              {professionalState && (
+                <Button variant="ghost" size="sm" onClick={() => navigate("/payment-settings")}>
+                  <CreditCard className="mr-1 h-4 w-4" /> Pagos
+                </Button>
+              )}
               <Button variant="ghost" size="sm" onClick={() => navigate("/my-bookings")}>
                 <CalendarDays className="mr-1 h-4 w-4" /> Mis citas
               </Button>
