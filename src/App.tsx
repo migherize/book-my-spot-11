@@ -13,6 +13,7 @@ import AuthPage from "./pages/AuthPage.tsx";
 import MyBookings from "./pages/MyBookings.tsx";
 import ProfessionalOnboarding from "./pages/ProfessionalOnboarding.tsx";
 import PaymentPage from "./pages/PaymentPage.tsx";
+import PaymentSettingsPage from "./pages/PaymentSettingsPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
