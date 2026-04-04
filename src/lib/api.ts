@@ -99,15 +99,30 @@ export async function fetchAvailableSlots(professionalId: string, date: Date): P
   const now = new Date();
   const isToday = date.toDateString() === now.toDateString();
 
-  // Get existing bookings for this professional on this date
-  const { data: bookings } = await supabase
-    .from("bookings")
-    .select("booking_time")
-    .eq("professional_id", professionalId)
-    .eq("booking_date", dateStr)
-    .neq("status", "cancelled");
+  // Get existing bookings and active holds in parallel
+  const [bookingsResult, holdsResult] = await Promise.all([
+    supabase
+      .from("bookings")
+      .select("booking_time")
+      .eq("professional_id", professionalId)
+      .eq("booking_date", dateStr)
+      .neq("status", "cancelled"),
+    supabase
+      .from("booking_holds")
+      .select("booking_time, expires_at")
+      .eq("professional_id", professionalId)
+      .eq("booking_date", dateStr)
+      .eq("status", "active"),
+  ]);
 
-  const bookedTimes = new Set((bookings ?? []).map((b: { booking_time: string }) => b.booking_time.slice(0, 5)));
+  const bookedTimes = new Set((bookingsResult.data ?? []).map((b: { booking_time: string }) => b.booking_time.slice(0, 5)));
+
+  // Filter active (non-expired) holds
+  const heldTimes = new Set(
+    (holdsResult.data ?? [])
+      .filter((h: { expires_at: string }) => new Date(h.expires_at) > now)
+      .map((h: { booking_time: string }) => h.booking_time.slice(0, 5))
+  );
 
   const slots: TimeSlot[] = [];
   for (let hour = 9; hour <= 18; hour++) {
@@ -118,7 +133,8 @@ export async function fetchAvailableSlots(professionalId: string, date: Date): P
       slotTime.setHours(hour, min, 0, 0);
       const isPast = isToday && slotTime <= now;
       const isBooked = bookedTimes.has(time);
-      slots.push({ time, available: !isPast && !isBooked });
+      const isHeld = heldTimes.has(time);
+      slots.push({ time, available: !isPast && !isBooked && !isHeld });
     }
   }
   return slots;
