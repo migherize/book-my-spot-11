@@ -36,6 +36,12 @@ export default function BookingConfirm() {
     enabled: !!professionalId,
   });
 
+  const { data: paymentSettings } = useQuery({
+    queryKey: ["paymentSettings", professionalId],
+    queryFn: () => fetchPaymentSettings(professionalId),
+    enabled: !!professionalId,
+  });
+
   const [step, setStep] = useState<"form" | "confirmed">("form");
   const [name, setName] = useState(profile?.full_name ?? "");
   const [email, setEmail] = useState(user?.email ?? "");
