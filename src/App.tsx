@@ -30,6 +30,7 @@ function AnimatedRoutes() {
         <Route path="/booking/payment" element={<PaymentPage />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/professional-onboarding" element={<ProfessionalOnboarding />} />
+        <Route path="/payment-settings" element={<PaymentSettingsPage />} />
         <Route path="/my-bookings" element={<MyBookings />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
