@@ -1,6 +1,7 @@
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { fetchProfessionalById, createBooking, sendBookingConfirmation } from "@/lib/api";
+import { fetchPaymentSettings } from "@/lib/payments";
 import MobileLayout from "@/components/MobileLayout";
 import PageTransition from "@/components/PageTransition";
 import { Button } from "@/components/ui/button";
