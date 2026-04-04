@@ -26,6 +26,7 @@ function AnimatedRoutes() {
         <Route path="/category/:categoryId" element={<CategoryPage />} />
         <Route path="/professional/:id" element={<ProfessionalPage />} />
         <Route path="/booking/confirm" element={<BookingConfirm />} />
+        <Route path="/booking/payment" element={<PaymentPage />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/professional-onboarding" element={<ProfessionalOnboarding />} />
         <Route path="/my-bookings" element={<MyBookings />} />
