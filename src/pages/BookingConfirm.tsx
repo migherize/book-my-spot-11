@@ -74,6 +74,21 @@ export default function BookingConfirm() {
       navigate(`/auth?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`);
       return;
     }
+
+    // If professional requires prepayment, redirect to payment page
+    if (paymentSettings?.requires_prepayment) {
+      const paymentParams = new URLSearchParams({
+        professional: professionalId,
+        date: date.toISOString().split("T")[0],
+        time,
+        name,
+        email,
+        phone,
+      });
+      navigate(`/booking/payment?${paymentParams.toString()}`);
+      return;
+    }
+
     setSubmitting(true);
     try {
       await createBooking({
