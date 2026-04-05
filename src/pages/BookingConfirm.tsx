@@ -48,10 +48,7 @@ export default function BookingConfirm() {
   const [phone, setPhone] = useState(profile?.phone ?? "");
   const [submitting, setSubmitting] = useState(false);
 
-  useState(() => {
-    if (profile?.full_name && !name) setName(profile.full_name);
-    if (user?.email && !email) setEmail(user.email);
-  });
+  // Profile data is already set via initial state defaults above
 
   if (!professional) {
     return (
